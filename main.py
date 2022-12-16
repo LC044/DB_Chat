@@ -17,9 +17,10 @@ class ViewController:
         self.viewlogin.loginSignal.connect(self.loadLoginView)
         self.viewlogin.show()
 
-    def loadMainWinView(self, str):
+    def loadMainWinView(self, username):
         self.viewMainWIn = chat.MainWinController()
-        self.viewMainWIn.setWindowTitle("MainWin")
+        self.viewMainWIn.setWindowTitle("Chat")
+        self.viewMainWIn.username = username
         self.viewMainWIn.exitSignal.connect(self.loadLoginView)  # 不需要回到登录界面可以省略
         self.viewMainWIn.show()
 

@@ -26,8 +26,20 @@ class registerControl(QWidget, registerUi.Ui_Dialog):
         self.setWindowTitle('WeChat')
         self.setWindowIcon(QIcon('./data/icon.png'))
         # self.register_2.clicked.connect(self.login_)
+        self.set_avatar.clicked.connect(self.up_avatar)
         self.back.clicked.connect(self.btnEnterClicked)
         self.register_2.clicked.connect(self.register)
+        self.avatar = None
+
+    def up_avatar(self):
+        path, _ = QFileDialog.getOpenFileName(self, 'Open file', r'..', "Image files (*.png;*.jpg)")
+        if path:
+            try:
+                pixmap = QPixmap(path).scaled(80, 80)  # 按指定路径找到图片
+                self.avatar_img.setPixmap(pixmap)  # 在label上显示图片
+                self.avatar = path
+            except:
+                self.error.setText('头像不存在')
 
     def register(self):
         # self.close()
@@ -40,8 +52,14 @@ class registerControl(QWidget, registerUi.Ui_Dialog):
             self.error.setText('用户已存在')
             # print('yonghu已经存在')
         else:
+            if not self.avatar:
+                self.error.setText('请上传头像')
+                return False
             self.error.setText('注册成功')
             self.error.setStyleSheet("color:black")
+            avatar = data.get_avator(username)
+            # new_path = '/'.join(avatar.split('/')[:-1])+'/'
+            data.mycopyfile(self.avatar, avatar + '.png')
             self.tips.setVisible(True)
             self.time.setVisible(True)
             self.thread = MyThread()  # 创建一个线程
@@ -74,6 +92,6 @@ class MyThread(QThread):
         self.sec = 2  # 默认1000秒
 
     def run(self):
-        for i in range(self.sec,-1,-1):
+        for i in range(self.sec, -1, -1):
             self.sec_changed_signal.emit(i)  # 发射信号
             time.sleep(1)

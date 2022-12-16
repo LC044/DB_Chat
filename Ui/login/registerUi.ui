@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>40</y>
+     <y>0</y>
      <width>221</width>
      <height>51</height>
     </rect>
@@ -36,9 +36,9 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>110</y>
+     <y>90</y>
      <width>222</width>
-     <height>94</height>
+     <height>129</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -75,6 +75,13 @@
      </layout>
     </item>
     <item>
+     <widget class="QPushButton" name="set_avatar">
+      <property name="text">
+       <string>选择头像</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QPushButton" name="register_2">
@@ -91,7 +98,7 @@
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>145</y>
+     <y>90</y>
      <width>101</width>
      <height>16</height>
     </rect>
@@ -110,7 +117,7 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>210</y>
+     <y>230</y>
      <width>51</width>
      <height>61</height>
     </rect>
@@ -129,7 +136,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>235</y>
+     <y>260</y>
      <width>121</width>
      <height>16</height>
     </rect>
@@ -162,6 +169,19 @@
    </property>
    <property name="text">
     <string>返回</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="avatar_img">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>120</y>
+     <width>80</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>+</string>
    </property>
   </widget>
  </widget>

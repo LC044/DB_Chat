@@ -31,7 +31,7 @@ class loginControl(QWidget, loginUi.Ui_Dialog):
         password = self.password.text()
         flag = data.login(username,password)
         if flag:
-            self.btnEnterClicked()
+            self.btnEnterClicked(username)
         else:
             self.error.setText('密码错误')
             # self.error.se
@@ -42,12 +42,12 @@ class loginControl(QWidget, loginUi.Ui_Dialog):
         self.close()
         # data.register(username, password)
 
-    def btnEnterClicked(self):
+    def btnEnterClicked(self,username):
         print("enter clicked")
 
         # 中间可以添加处理逻辑
 
-        self.loginSignal.emit("login")
+        self.loginSignal.emit(username)
         self.close()
 
     def btnExitClicked(self):
