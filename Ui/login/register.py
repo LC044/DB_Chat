@@ -45,9 +45,10 @@ class registerControl(QWidget, registerUi.Ui_Dialog):
         # self.close()
         username = self.username.text()
         password = self.password.text()
-        flag = data.register(username, password)
-        print('123456')
-        print(flag)
+        nickname = self.nickname.text()
+        flag = data.register(username, password,nickname)
+        # print('123456')
+        # print(flag)
         if not flag:
             self.error.setText('用户已存在')
             # print('yonghu已经存在')
@@ -59,6 +60,10 @@ class registerControl(QWidget, registerUi.Ui_Dialog):
             self.error.setStyleSheet("color:black")
             avatar = data.get_avator(username)
             # new_path = '/'.join(avatar.split('/')[:-1])+'/'
+            print(avatar)
+            if '.' in avatar[-10:]:
+                avatar = '.'.join(avatar.split('.')[:-1])
+            print(avatar)
             data.mycopyfile(self.avatar, avatar + '.png')
             self.tips.setVisible(True)
             self.time.setVisible(True)
