@@ -23,7 +23,7 @@ class registerControl(QWidget, registerUi.Ui_Dialog):
         self.setupUi(self)
         self.tips.setVisible(False)
         self.time.setVisible(False)
-        self.setWindowTitle('WeChat')
+        self.setWindowTitle('Chat')
         self.setWindowIcon(QIcon('./data/icon.png'))
         # self.register_2.clicked.connect(self.login_)
         self.set_avatar.clicked.connect(self.up_avatar)

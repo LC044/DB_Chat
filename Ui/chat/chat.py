@@ -15,14 +15,16 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from .chatUi import *
 from DB import data
-from .addContact import addControl
-from .Group import GroupControl
-from .userinfoUi import Ui_Frame as coninfoUi
-from .myinfo import InfoControl
+from .addContact.addContact import addControl
+from .group.Group import GroupControl
+from .userinfo.userinfoUi import Ui_Frame as coninfoUi
+from .myinfo.myinfo import InfoControl
 
 
 # from PyQt5.QtWebEngineWidgets import QWebEngineView
 class Me:
+    """个人信息"""
+
     def __init__(self, username):
         self.username = username
         self.username = username  # 自己的用户名
@@ -46,6 +48,7 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.setupUi(self)
         self.setWindowTitle('WeChat')
         self.setWindowIcon(QIcon('./data/icon.png'))
+        self.initui()
         self.Me = Me(username)
         self.GroupView = GroupControl(parent=self.frame_3, Me=self.Me)
         self.GroupView.setVisible(False)
@@ -71,64 +74,63 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.btn_contact.clicked.connect(self.showContact)
         self.btn_update_myinfo.clicked.connect(self.myInfo)
         self.btn_destroy.clicked.connect(self.destroy_me)
+        self.btn_about.clicked.connect(self.about)
         # self.showAvatar('./data/icon.png')
         self.contacts = {}
         self.show_avator(self.Me.my_avatar, self.myavatar)  # 显示自己头像
         # self.showContact()  # 显示联系人
+        self.now_btn = self.btn_chat
+        self.last_btn = None
         self.chat_flag = True
         self.showChat()
         self.ta_username = None
         self.last_msg_time = datetime.datetime(2022, 12, 19, 15, 4)  # 上次信息的时间
         self.last_talkerId = None
+        self.now_talkerId = None
+
         self.recvThread = recvThread(username, self.Me.socket)  # 创建新的线程用于接收消息
         self.recvThread.recv_userSignal.connect(self.showMsg)  # 接收到的消息与显示消息函数绑定
         self.recvThread.online_signal.connect(self.Chat)
         self.recvThread.recv_groupSignal.connect(self.GroupView.showMsg)
         self.recvThread.start()
 
-    def show_avator(self, path, label):
-        print(self.Me.username)
-        print(path)
-        pixmap = QPixmap(path).scaled(60, 60)  # 按指定路径找到图片
-        label.setPixmap(pixmap)  # 在label上显示图片
-
-    def add_contact(self):  # 添加联系人
-        # self.frame.setVisible(False)
-        self.frame_2.setVisible(False)
-        self.addControlView = addControl(self.Me.username)
-        self.addControlView.contactSignal.connect(self.new_contactUi)
-        self.addControlView.show()
-        # addControlView.exec_()
-
-    def new_contactUi(self, contact):
-        talkerId = contact[0]
-        self.contacts_num += 1
-        max_hight = max((self.contacts_num) * 80, 680)
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, max_hight))
-        pushButton_2 = Contact(self.scrollAreaWidgetContents, self.contacts_num, contact)
-        pushButton_2.setGeometry(QtCore.QRect(0, 80 * self.contacts_num, 300, 80))
-        pushButton_2.setLayoutDirection(QtCore.Qt.LeftToRight)
-        pushButton_2.clicked.connect(pushButton_2.show_msg)
-        pushButton_2.usernameSingal.connect(self.Chat)
-        self.contacts[talkerId] = pushButton_2
-
-    def showAvatar(self, path, contact):
-        pixmap = QPixmap(path).scaled(60, 60)  # 按指定路径找到图片
-        contact.image1.setPixmap(pixmap)  # 在label上显示图片
-
-    def signUp(self):
-        """
-        退出登录，将状态设置为离线
-        :return:
-        """
-        data.offline(self.Me.username)
-        print("enter clicked")
-        self.exitSignal.emit()
-        self.close()
+    def initui(self):
+        self.textEdit = myTextEdit(self.frame)
+        self.textEdit.setGeometry(QtCore.QRect(9, 580, 821, 141))
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.textEdit.setFont(font)
+        self.textEdit.setTabStopWidth(80)
+        self.textEdit.setCursorWidth(1)
+        self.textEdit.setObjectName("textEdit")
+        self.textEdit.sendSignal.connect(self.sendMsg)
+        self.btn_sendMsg = QtWidgets.QPushButton(self.frame)
+        self.btn_sendMsg.setGeometry(QtCore.QRect(680, 670, 121, 51))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(15)
+        font.setBold(False)
+        font.setWeight(50)
+        self.btn_sendMsg.setFont(font)
+        self.btn_sendMsg.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.btn_sendMsg.setMouseTracking(False)
+        self.btn_sendMsg.setAutoFillBackground(False)
+        self.btn_sendMsg.setStyleSheet("QPushButton {background-color: #f0f0f0;\n"
+                                       "padding: 10px;\n"
+                                       "color:rgb(5,180,104);}\n"
+                                       "QPushButton:hover{background-color: rgb(198,198,198)}\n"
+                                       )
+        self.btn_sendMsg.setIconSize(QtCore.QSize(40, 40))
+        self.btn_sendMsg.setCheckable(False)
+        self.btn_sendMsg.setAutoDefault(True)
+        self.btn_sendMsg.setObjectName("btn_sendMsg")
+        _translate = QtCore.QCoreApplication.translate
+        self.btn_sendMsg.setText(_translate("Dialog", "发送"))
+        self.btn_sendMsg.setToolTip('按Enter键发送，按Ctrl+Enter键换行')
 
     def showChat(self):
         """
-        显示联系人
+        显示聊天界面
         :return:
         """
         self.frame_2.setVisible(True)
@@ -136,8 +138,12 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.MyInfoUi.setVisible(False)
         self.frame_coninfo.setVisible(False)
         self.frame.setVisible(True)
-        # self.scrollAreaWidgetContents.hide()
-
+        self.now_btn = self.btn_chat
+        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        if self.last_btn and self.last_btn != self.now_btn:
+            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
+                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+        self.last_btn = self.btn_chat
         self.chat_flag = True
         contacts = data.get_contacts(self.Me.username)
         print(contacts)
@@ -171,10 +177,109 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.MyInfoUi.setVisible(False)
         self.frame_coninfo.setVisible(False)
         self.frame.setVisible(False)
+        self.now_btn = self.btn_contact
+        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        if self.last_btn and self.last_btn != self.now_btn:
+            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
+                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+        self.last_btn = self.btn_contact
         # self.contacts = {}
         self.chat_flag = False
 
+    def show_avator(self, path, label):
+        """显示头像"""
+        print(self.Me.username)
+        print(path)
+
+        pixmap = QPixmap(path).scaled(100, 100)  # 按指定路径找到图片
+        # pixmap = QPixmap(100,100)
+        pixmap.scaled(100, 100)
+        # pixmap.
+        painter = QPainter(pixmap)
+        pen = QPen(Qt.red, 10)
+        painter.setPen(pen)
+        # painter.drawRect(0,0,20,20)
+        painter.drawEllipse(80, 50, 10, 10)
+        # painter.drawPixmap(80,80,pixmap)
+        painter.end()
+        label.setPixmap(pixmap)  # 在label上显示图片
+
+    def add_contact(self):  # 添加联系人
+        # self.frame.setVisible(False)
+        self.now_btn = self.btn_addC
+        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        if self.last_btn and self.last_btn != self.now_btn:
+            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
+                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+        self.last_btn = self.btn_addC
+        self.frame_2.setVisible(False)
+        self.GroupView.setVisible(False)
+        self.addControlView = addControl(self.Me.username)
+        self.addControlView.contactSignal.connect(self.new_contactUi)
+        self.addControlView.show()
+        # addControlView.exec_()
+
+    def groupChat(self):
+        """显示群组聊天界面"""
+        self.frame_2.setVisible(False)
+        # self.frame_4.setVisible(True)
+        self.GroupView.setVisible(True)
+        self.MyInfoUi.setVisible(False)
+        self.now_btn = self.btn_add_group
+        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        if self.last_btn and self.last_btn != self.now_btn:
+            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
+                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+        self.last_btn = self.btn_add_group
+        # self.GroupView.initUi()
+
+    def myInfo(self):
+        """显示我的个人信息"""
+        self.now_btn = self.btn_update_myinfo
+        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        if self.last_btn and self.last_btn != self.now_btn:
+            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
+                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+        self.last_btn = self.btn_update_myinfo
+        self.frame_2.setVisible(False)
+        # self.frame_4.setVisible(True)
+        self.GroupView.setVisible(False)
+        self.MyInfoUi.setVisible(True)
+        self.MyInfoUi.initUi()
+
+    def new_contactUi(self, contact):
+        """每添加一个联系人在UI界面上显示出来"""
+        talkerId = contact[0]
+        self.contacts_num += 1
+        max_hight = max((self.contacts_num) * 80, 680)
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, max_hight))
+        pushButton_2 = Contact(self.scrollAreaWidgetContents, self.contacts_num, contact)
+        pushButton_2.setGeometry(QtCore.QRect(0, 80 * self.contacts_num - 80, 300, 80))
+        pushButton_2.setLayoutDirection(QtCore.Qt.LeftToRight)
+        pushButton_2.clicked.connect(pushButton_2.show_msg)
+        pushButton_2.usernameSingal.connect(self.Chat)
+        self.contacts[talkerId] = pushButton_2
+
+    def showAvatar(self, path, contact):
+        pixmap = QPixmap(path).scaled(60, 60)  # 按指定路径找到图片
+        contact.image1.setPixmap(pixmap)  # 在label上显示图片
+
+    def signUp(self):
+        """
+        退出登录，将状态设置为离线
+        :return:
+        """
+        data.offline(self.Me.username)
+        print("enter clicked")
+        self.exitSignal.emit()
+        self.close()
+
     def contactInfo(self, contactId):
+        """
+        显示联系人信息
+        :param contactId:
+        :return:
+        """
         self.GroupView.setVisible(False)
         self.frame.setVisible(False)
         self.frame_2.setVisible(True)
@@ -189,21 +294,36 @@ class MainWinController(QMainWindow, Ui_Dialog):
         pixmap = QPixmap(acatar).scaled(80, 80)  # 按指定路径找到图片
         self.coninfoUi.l_avatar.setPixmap(pixmap)  # 在label上显示图片
         self.coninfoUi.lineEdit.setText(conRemark)
+        # 编辑框聚焦
+        self.coninfoUi.lineEdit.setFocus()
 
     def update_conRemark(self):
+        """
+        修改备注名
+        :return:
+        """
         conRemark = self.coninfoUi.lineEdit.text()
         data.update_conRemark(self.Me.username, self.ta_username, conRemark)
         self.contacts[self.ta_username].remark1.setText(conRemark)
         self.contactInfo(self.ta_username)
 
     def delete_contact(self):
-        data.delete_contact(self.Me.username, self.ta_username)
-        var = self.contacts[self.ta_username].setVisible(False)
-        self.contacts.pop(self.ta_username)
-        self.contacts_num -= 1
-        self.last_talkerId = None
-        # self.contacts[self.ta_username]=None
-        self.showContact()
+        """
+        删除联系人
+        :return:
+        """
+        a = QMessageBox.question(self, '警告', '删除好友之后将删除与其聊天记录\n你确定要继续吗?', QMessageBox.Yes | QMessageBox.No,
+                                 QMessageBox.No)  # "退出"代表的是弹出框的标题,"你确认退出.."表示弹出框的内容
+        if a == QMessageBox.Yes:
+            data.delete_contact(self.Me.username, self.ta_username)
+            var = self.contacts[self.ta_username].setVisible(False)
+            self.contacts.pop(self.ta_username)
+            self.contacts_num -= 1
+            self.last_talkerId = None
+            # self.contacts[self.ta_username]=None
+            self.showContact()
+        else:
+            return
 
     def Chat(self, talkerId):
         """
@@ -211,19 +331,26 @@ class MainWinController(QMainWindow, Ui_Dialog):
         :param talkerId:
         :return:
         """
-
+        self.now_talkerId = talkerId
         status = data.check_online(talkerId)
         if status == -1:
             # pass
             self.contacts[talkerId].msg1.setText('离线')
         else:
             self.contacts[talkerId].msg1.setText('在线')
-
+        # 把当前按钮设置为灰色
         if self.last_talkerId and self.last_talkerId != talkerId:
             print('对方账号：', self.last_talkerId)
-            self.contacts[self.last_talkerId].setStyleSheet("background-color : rgb(253,253,253)")
+            self.contacts[self.last_talkerId].setStyleSheet(
+                "QPushButton {background-color: rgb(253,253,253);}"
+                "QPushButton:hover{background-color: rgb(209,209,209);}\n"
+            )
         self.last_talkerId = talkerId
-        self.contacts[talkerId].setStyleSheet("background-color : rgb(198,198,198)")
+        self.contacts[talkerId].setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}"
+            "QPushButton:hover{background-color: rgb(209,209,209);}\n"
+        )
+        # "background-color : rgb(198,198,198)""QPushButton:hover{}\n")
         if not self.chat_flag:
             return self.contactInfo(talkerId)
         self.frame.setVisible(True)
@@ -237,6 +364,7 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.message.append(talkerId)
         self.ta_username = talkerId
         self.ta_avatar = data.get_avator(talkerId)
+        self.textEdit.setFocus()
         # 创建新的线程用于显示聊天记录
         self.Thread = ChatMsg(self.Me.username, talkerId, self.Me.socket)
         self.Thread.isSend_signal.connect(self.showMsg)
@@ -244,20 +372,6 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.Thread.sendSignal.connect(self.showMsg)
         self.Thread.start()
         pass
-
-    def groupChat(self):
-        self.frame_2.setVisible(False)
-        # self.frame_4.setVisible(True)
-        self.GroupView.setVisible(True)
-        self.MyInfoUi.setVisible(False)
-        # self.GroupView.initUi()
-
-    def myInfo(self):
-        self.frame_2.setVisible(False)
-        # self.frame_4.setVisible(True)
-        self.GroupView.setVisible(False)
-        self.MyInfoUi.setVisible(True)
-        self.MyInfoUi.initUi()
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         print("closed")
@@ -272,11 +386,12 @@ class MainWinController(QMainWindow, Ui_Dialog):
         """
         msg = self.textEdit.toPlainText()
         message = self.Thread.send_msg(msg)
-        if message:
-            print(msg, '发送成功')
+        if message == -1:
+            print(msg, '发送失败')
+            QMessageBox.critical(self, "错误", "对方不在线")
             # self.showMsg(message)
         else:
-            print(msg, '发送失败')
+            print(msg, '发送成功')
         self.textEdit.clear()
 
     def check_time(self, msg_time):
@@ -355,8 +470,19 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.message.insertHtml(html)
 
     def destroy_me(self):
-        data.del_user(self.Me.username)
-        self.close()
+        """注销账户"""
+        a = QMessageBox.question(self, '注销', '注销之后将删除所有数据\n你确定要注销吗?', QMessageBox.Yes | QMessageBox.No,
+                                 QMessageBox.No)  # "退出"代表的是弹出框的标题,"你确认退出.."表示弹出框的内容
+        if a == QMessageBox.Yes:
+            data.del_user(self.Me.username)
+            self.close()
+        else:
+            return
+
+    def about(self):
+        QMessageBox.about(self, "关于",
+                          "关于作者\n姓名：周帅康\n学号：2020303457"
+                          )
 
     def __del__(self):
         data.offline(self.Me.username)
@@ -467,6 +593,10 @@ class Contact(QtWidgets.QPushButton):
         self.gridLayout1.setRowStretch(0, 5)
         self.gridLayout1.setRowStretch(1, 3)
         self.setLayout(self.gridLayout1)
+        self.setStyleSheet(
+            "QPushButton {background-color: rgb(253,253,253);}"
+            "QPushButton:hover{background-color: rgb(209,209,209);}\n"
+        )
         # if id:
         #     self.show_info(id)
         if contact:
@@ -535,7 +665,7 @@ class ChatMsg(QThread):
         self.ta_addr = ('localhost', self.ta_port)
         if self.ta_port == -1:
             print('对方不在线')
-            return '对方不在线'
+            return -1
         send_data = {
             'type': "U",
             'username': self.my_u,
@@ -560,3 +690,33 @@ class ChatMsg(QThread):
         for message in messages:
             self.isSend_signal.emit(message)
         # self.recv_msg()
+
+
+class myTextEdit(QtWidgets.QTextEdit):  # 继承 原本组件
+    sendSignal = pyqtSignal(str)
+
+    def __init__(self, parent):
+        QtWidgets.QTextEdit.__init__(self, parent)
+        self.parent = parent
+        _translate = QtCore.QCoreApplication.translate
+        self.setHtml(_translate("Dialog",
+                                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                "p, li { white-space: pre-wrap; }\n"
+                                "</style></head><body style=\" font-family:\'SimSun\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
+                                "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+
+    def keyPressEvent(self, event):
+        QtWidgets.QTextEdit.keyPressEvent(self, event)
+        if event.key() == Qt.Key_Return:  # 如果是Enter 按钮
+            modifiers = event.modifiers()
+            if modifiers == Qt.ControlModifier:
+                print('success press ctrl+enter key', self.toPlainText())
+                self.append('\0')
+                return
+            self.sendSignal.emit(self.toPlainText())
+            print('success press enter key', self.toPlainText())
+
+        # if modifiers == (Qt.ControlModifier) and event.key() == Qt.Key_Return:
+        #     self.sendSignal.emit(self.toPlainText())
+        #     print('success press enter key', self.toPlainText())

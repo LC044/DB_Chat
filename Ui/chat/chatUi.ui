@@ -19,112 +19,6 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <widget class="QPushButton" name="sign_up">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>71</width>
-     <height>28</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>退出登录</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>160</y>
-     <width>111</width>
-     <height>562</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,1,0,1">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QPushButton" name="btn_chat">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>80</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>聊天</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_contact">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>80</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>联系人</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_addC">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>80</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>添加联系人</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_add_group">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>80</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>群聊</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_update_myinfo">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>80</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>修改资料</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="myavatar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>30</y>
-     <width>100</width>
-     <height>100</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>avatar</string>
-   </property>
-  </widget>
   <widget class="QFrame" name="frame_3">
    <property name="geometry">
     <rect>
@@ -229,6 +123,19 @@
          <width>80</width>
          <height>80</height>
         </size>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>10</y>
+         <width>72</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
        </property>
       </widget>
      </widget>
@@ -412,18 +319,180 @@ p, li { white-space: pre-wrap; }
     </widget>
    </widget>
   </widget>
-  <widget class="QPushButton" name="btn_destroy">
+  <widget class="QFrame" name="frame_4">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>0</x>
      <y>0</y>
-     <width>71</width>
-     <height>28</height>
+     <width>161</width>
+     <height>721</height>
     </rect>
    </property>
-   <property name="text">
-    <string>注销账户</string>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(240,240,240)</string>
    </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>111</width>
+      <height>501</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,1,0,1,0">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="btn_chat">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>聊天</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_contact">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>联系人</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_addC">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>添加联系人</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_add_group">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>群聊</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_update_myinfo">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>修改资料</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_about">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {background-color: rgb(240,240,240);}
+QPushButton:hover{background-color: rgb(209,209,209);}</string>
+       </property>
+       <property name="text">
+        <string>关于</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="myavatar">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>100</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>avatar</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="sign_up">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>退出登录</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_destroy">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>0</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>注销账户</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

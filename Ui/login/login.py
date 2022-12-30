@@ -21,7 +21,8 @@ class loginControl(QWidget, loginUi.Ui_Dialog):
     def __init__(self, parent=None):
         super(loginControl, self).__init__(parent)
         self.setupUi(self)
-        self.setWindowTitle('WeChat')
+        self.setWindowTitle('Chat')
+        self.password.setEchoMode(QLineEdit.Password)
         self.setWindowIcon(QIcon('./data/icon.png'))
         self.login.clicked.connect(self.login_)
         self.register_2.clicked.connect(self.register)

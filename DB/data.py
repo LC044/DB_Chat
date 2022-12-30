@@ -8,30 +8,37 @@
 @comment : ···
 """
 import json
-import struct
-
 import pymysql
 import random
 import time
 import hashlib
-import os
 import datetime
 import os
 import shutil
-from glob import glob
-
+f = open('.\data\config.json','r')
+config = json.loads(f.read())
+username = config['username']
+password = config['password']
+database = config['database']
 # 打开数据库连接t
 db = pymysql.connect(
     host='localhost',
-    user='root',
-    password='ZSK863854',
-    database='chat_2020303457',
+    user=username,
+    password=password,
+    database=database,
     autocommit=True
 )
 cursor = db.cursor()
 
 
 def register(username, password, nickname):
+    """
+    注册账号
+    :param username: 用户名
+    :param password: 密码
+    :param nickname: 昵称
+    :return:
+    """
     try:
         create = 'insert into users (username,password,createTime) values (%s,%s,%s)'
         timestamp = float(time.time())
@@ -39,9 +46,7 @@ def register(username, password, nickname):
         cursor.execute(create, [username, password, dt])
         create = 'insert into userinfo (username,nickname) values (%s,%s)'
         cursor.execute(create, [username, nickname])
-        # create = ''
         db.commit()
-        # if 1 :
         try:
             sql = f'''
             create view msg_view_{username}
@@ -105,17 +110,17 @@ def add_contact(username, contactId, conRemark, _type=3):
     select = 'select * from userinfo where username = %s '
     cursor.execute(select, [username])
     result = cursor.fetchall()
-    if result:
-        # nickName = result[0][1]
-        pass
-    else:
+    if not result:
         return False
     if not conRemark:
         conRemark = None
-    if _type == 3:
-        cursor.execute(send, [username, conRemark, 3, dt, contactId])
-        db.commit()
-        return (contactId, conRemark, 3, dt)
+    try:
+        if _type == 3:
+            cursor.execute(send, [username, conRemark, 3, dt, contactId])
+            db.commit()
+            return (contactId, conRemark, 3, dt)
+    except:
+        return False
 
 
 def get_userinfo(username):
@@ -285,9 +290,16 @@ def get_remark(username, talkerId):
     return result[0]
 
 
-def mycopyfile(srcfile, dstpath):  # 复制函数
-    if 1:
-        # try:
+def mycopyfile(srcfile, dstpath):
+    # 复制函数
+    """
+    复制文件
+    :param srcfile: 原路径
+    :param dstpath: 新路径
+    :return:
+    """
+    # if 1:
+    try:
         if not os.path.isfile(srcfile):
             print("%s not exist!" % (srcfile))
             return
@@ -305,8 +317,8 @@ def mycopyfile(srcfile, dstpath):  # 复制函数
             shutil.copy(srcfile, dpath)  # 复制文件
             os.rename(dpath + '/' + fname, dstpath)
             # print ("copy %s -> %s"%(srcfile, dstpath + fname))
-    # except:
-    #     print('文件已存在')
+    except:
+        print('文件已存在')
 
 
 def get_message(username, talkerId):
@@ -340,7 +352,7 @@ def add_group(username, g_id, nickname):
     dt = dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute(sql, [username, g_id, dt, nickname, 2])
     db.commit()
-    return True
+    return [g_id, dt, nickname, 2]
 
 
 def search_group(gid):
@@ -359,8 +371,12 @@ def get_groups(username):
 
 def get_group_users(g_id):
     db.commit()
-    sql = '''select gu_uid,gu_gid,gu_time,gu_nickname,status from group_users,userinfo where gu_gid=%s and 
-    gu_uid=userinfo.username '''
+    sql = '''
+        select gu_uid,gu_gid,gu_time,gu_nickname,status 
+        from group_users,userinfo 
+        where gu_gid=%s and 
+        gu_uid=userinfo.username 
+    '''
     cursor.execute(sql, [g_id])
     db.commit()
     result = cursor.fetchall()
