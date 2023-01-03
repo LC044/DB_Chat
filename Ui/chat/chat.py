@@ -7,6 +7,7 @@
 @Version : Python3.10
 @comment : ···
 """
+import socket  # 导入socket模块
 import datetime
 import json
 
@@ -89,7 +90,8 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.now_talkerId = None
 
         self.recvThread = recvThread(username, self.Me.socket)  # 创建新的线程用于接收消息
-        self.recvThread.recv_userSignal.connect(self.showMsg)  # 接收到的消息与显示消息函数绑定
+        self.recvThread.recv_userSignal.connect(
+            self.showMsg)  # 接收到的消息与显示消息函数绑定
         self.recvThread.online_signal.connect(self.Chat)
         self.recvThread.recv_groupSignal.connect(self.GroupView.showMsg)
         self.recvThread.start()
@@ -139,7 +141,8 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.frame_coninfo.setVisible(False)
         self.frame.setVisible(True)
         self.now_btn = self.btn_chat
-        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        self.now_btn.setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}")
         if self.last_btn and self.last_btn != self.now_btn:
             self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
                                         "QPushButton:hover{background-color: rgb(209,209,209);}\n")
@@ -149,7 +152,8 @@ class MainWinController(QMainWindow, Ui_Dialog):
         print(contacts)
         self.contacts_num = len(contacts)
         max_hight = max(len(contacts) * 80, 680)
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, max_hight))
+        self.scrollAreaWidgetContents.setGeometry(
+            QtCore.QRect(0, 0, 300, max_hight))
         for i in range(len(contacts)):
             contact = contacts[i]
             # print(contact)
@@ -178,7 +182,8 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.frame_coninfo.setVisible(False)
         self.frame.setVisible(False)
         self.now_btn = self.btn_contact
-        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        self.now_btn.setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}")
         if self.last_btn and self.last_btn != self.now_btn:
             self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
                                         "QPushButton:hover{background-color: rgb(209,209,209);}\n")
@@ -194,20 +199,21 @@ class MainWinController(QMainWindow, Ui_Dialog):
         pixmap = QPixmap(path).scaled(100, 100)  # 按指定路径找到图片
         # pixmap = QPixmap(100,100)
         pixmap.scaled(100, 100)
-        # pixmap.
-        painter = QPainter(pixmap)
-        pen = QPen(Qt.red, 10)
-        painter.setPen(pen)
-        # painter.drawRect(0,0,20,20)
-        painter.drawEllipse(80, 50, 10, 10)
-        # painter.drawPixmap(80,80,pixmap)
-        painter.end()
+        # # pixmap.
+        # painter = QPainter(pixmap)
+        # pen = QPen(Qt.red, 10)
+        # painter.setPen(pen)
+        # # painter.drawRect(0,0,20,20)
+        # painter.drawEllipse(80, 50, 10, 10)
+        # # painter.drawPixmap(80,80,pixmap)
+        # painter.end()
         label.setPixmap(pixmap)  # 在label上显示图片
 
     def add_contact(self):  # 添加联系人
         # self.frame.setVisible(False)
         self.now_btn = self.btn_addC
-        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        self.now_btn.setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}")
         if self.last_btn and self.last_btn != self.now_btn:
             self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
                                         "QPushButton:hover{background-color: rgb(209,209,209);}\n")
@@ -226,7 +232,8 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.GroupView.setVisible(True)
         self.MyInfoUi.setVisible(False)
         self.now_btn = self.btn_add_group
-        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        self.now_btn.setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}")
         if self.last_btn and self.last_btn != self.now_btn:
             self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
                                         "QPushButton:hover{background-color: rgb(209,209,209);}\n")
@@ -236,10 +243,14 @@ class MainWinController(QMainWindow, Ui_Dialog):
     def myInfo(self):
         """显示我的个人信息"""
         self.now_btn = self.btn_update_myinfo
-        self.now_btn.setStyleSheet("QPushButton {background-color: rgb(198,198,198);}")
+        self.now_btn.setStyleSheet(
+            "QPushButton {background-color: rgb(198,198,198);}"
+        )  # 当前按钮设置为灰色
         if self.last_btn and self.last_btn != self.now_btn:
-            self.last_btn.setStyleSheet("QPushButton {background-color: rgb(240,240,240);}"
-                                        "QPushButton:hover{background-color: rgb(209,209,209);}\n")
+            self.last_btn.setStyleSheet(
+                "QPushButton {background-color: rgb(240,240,240);}"
+                "QPushButton:hover{background-color: rgb(209,209,209);}\n"
+            )  # 上一个按钮设置为白色
         self.last_btn = self.btn_update_myinfo
         self.frame_2.setVisible(False)
         # self.frame_4.setVisible(True)
@@ -252,9 +263,12 @@ class MainWinController(QMainWindow, Ui_Dialog):
         talkerId = contact[0]
         self.contacts_num += 1
         max_hight = max((self.contacts_num) * 80, 680)
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, max_hight))
-        pushButton_2 = Contact(self.scrollAreaWidgetContents, self.contacts_num, contact)
-        pushButton_2.setGeometry(QtCore.QRect(0, 80 * self.contacts_num - 80, 300, 80))
+        self.scrollAreaWidgetContents.setGeometry(
+            QtCore.QRect(0, 0, 300, max_hight))
+        pushButton_2 = Contact(
+            self.scrollAreaWidgetContents, self.contacts_num, contact)
+        pushButton_2.setGeometry(QtCore.QRect(
+            0, 80 * self.contacts_num - 80, 300, 80))
         pushButton_2.setLayoutDirection(QtCore.Qt.LeftToRight)
         pushButton_2.clicked.connect(pushButton_2.show_msg)
         pushButton_2.usernameSingal.connect(self.Chat)
@@ -371,7 +385,6 @@ class MainWinController(QMainWindow, Ui_Dialog):
         self.Thread.recvSignal.connect(self.showMsg)
         self.Thread.sendSignal.connect(self.showMsg)
         self.Thread.start()
-        pass
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         print("closed")
@@ -473,11 +486,10 @@ class MainWinController(QMainWindow, Ui_Dialog):
         """注销账户"""
         a = QMessageBox.question(self, '注销', '注销之后将删除所有数据\n你确定要注销吗?', QMessageBox.Yes | QMessageBox.No,
                                  QMessageBox.No)  # "退出"代表的是弹出框的标题,"你确认退出.."表示弹出框的内容
-        if a == QMessageBox.Yes:
-            data.del_user(self.Me.username)
-            self.close()
-        else:
+        if a != QMessageBox.Yes:
             return
+        data.del_user(self.Me.username)
+        self.close()
 
     def about(self):
         QMessageBox.about(self, "关于",
@@ -561,7 +573,8 @@ class Contact(QtWidgets.QPushButton):
         font.setPointSize(8)
         self.time0_1.setFont(font)
         self.time0_1.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.time0_1.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.time0_1.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.time0_1.setObjectName("time0_1")
         self.gridLayout1.addWidget(self.time0_1, 0, 2, 1, 1)
         self.remark1 = QtWidgets.QLabel(self.layoutWidget)
@@ -585,7 +598,8 @@ class Contact(QtWidgets.QPushButton):
         self.image1.setInputMethodHints(QtCore.Qt.ImhNone)
         self.image1.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.image1.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.image1.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.image1.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.image1.setObjectName("image1")
         self.gridLayout1.addWidget(self.image1, 0, 0, 2, 1)
         self.gridLayout1.setColumnStretch(0, 1)
@@ -600,8 +614,6 @@ class Contact(QtWidgets.QPushButton):
         # if id:
         #     self.show_info(id)
         if contact:
-            # print(contact)
-
             self.username = contact[0]
             self.conRemark = contact[1]
             self._type = contact[2]
@@ -609,34 +621,21 @@ class Contact(QtWidgets.QPushButton):
             self.show_info(id)
 
     def show_info(self, id):
-        if 1:
-            # try:
-            avatar = data.get_avator(self.username)
-            remark = id
-            time = datetime.datetime.now().strftime("%m-%d %H:%M")
-            msg = '还没说话'
-            pixmap = QPixmap(avatar).scaled(60, 60)  # 按指定路径找到图片
-            self.image1.setPixmap(pixmap)  # 在label上显示图片
-            self.remark1.setText(self.conRemark)
-            if data.check_online(self.username) == -1:
-                self.msg1.setText('(离线)  ' + msg)
-            else:
-                self.msg1.setText('(在线)  ' + msg)
-            self.time0_1.setText(time)
-
-        # except:
-        #     pixmap = QPixmap('./data/icon.png').scaled(60, 60)  # 按指定路径找到图片
-        #     self.image1.setPixmap(pixmap)  # 在label上显示图片
-        #     self.remark1.setText('remark')
-        #     self.time0_1.setText('2022/01/01')
-        #     self.msg1.setText('------')
+        avatar = data.get_avator(self.username)
+        remark = id
+        time = datetime.datetime.now().strftime("%m-%d %H:%M")
+        msg = '还没说话'
+        pixmap = QPixmap(avatar).scaled(60, 60)  # 按指定路径找到图片
+        self.image1.setPixmap(pixmap)  # 在label上显示图片
+        self.remark1.setText(self.conRemark)
+        if data.check_online(self.username) == -1:
+            self.msg1.setText('(离线)  ' + msg)
+        else:
+            self.msg1.setText('(在线)  ' + msg)
+        self.time0_1.setText(time)
 
     def show_msg(self):
         self.usernameSingal.emit(self.username)
-        pass
-
-
-import socket  # 导入socket模块
 
 
 class ChatMsg(QThread):
